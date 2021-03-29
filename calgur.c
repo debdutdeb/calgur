@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "cJSON.h"
-#include "walgur.h"
+#include "calgur.h"
 
 static cJSON *reddit_get_image_object_list (const cJSON *json)
 {

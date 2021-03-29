@@ -6,7 +6,7 @@
 #include "cJSON.h"
 #include "helpers.h"
 #include "wallpaper.h"
-#include "walgur.h"
+#include "calgur.h"
 #include "debug.h"
 
 int main 
