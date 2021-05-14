@@ -9,53 +9,21 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "helpers.h"
-#include "debug.h"
-
-// Because I don't like how N - 1 looks
-#define index(N) N-1
 
 extern int errno;
 
-int run_command (const char *cmd) {
-
-	int argc = 1;
-
-	char **argv;
-
-	char *command = strdup (cmd);
-	check_memory(command);
-
-	char *token;
-
-	for (token=strtok(command, " "), argv=malloc(sizeof(char *)); token && argv; token=strtok(NULL, " "), argv=realloc(argv, sizeof(char *) * argc))
-		argv[index(argc++)] = strdup (token);
-	argv[argc] = NULL;
-
-	log_info("argc: %d\n", argc);
-
-	pid_t cpid;
-	int *wstatus = &errno;
-
-	switch (cpid = fork()) {
-		case -1:
-			sentinel("fork");
-		case  0:
-			check(-1 == execvp (argv[0], argv), "execvp");
-		default:
-			check(cpid == waitpid (cpid, wstatus, WUNTRACED|WCONTINUED), "waitpid");
+int run_command(const char *cmd) {
+	FILE *pipe = popen(cmd, "r");
+	if (!pipe) {
+		perror("pipe");
+		return -1;
 	}
-
-error:
-	command ? free (command) : NULL;
-	if (*argv)
-		for (int f = 0; f < argc; f++)
-			free (argv[f]);
-	argv ? free (argv) : NULL;
-	return *wstatus;
-
+	for (int c = fgetc(pipe); c != EOF; c = fgetc(pipe))
+		putchar(c);
+	return 0;
 }
 
-bool download (CURL *curl, const char *url, const char *filename)
+bool download(CURL *curl, const char *url, const char *filename)
 {
 
 	FILE *fs = fopen (filename, "wb");
@@ -126,38 +94,23 @@ CURLdata *get_response (CURL *curl, char *url)
 	return mem;
 }
 
-char *mutant_string (const char *s, ...) {
+char *mutant_string (size_t length, const char *tokens[length])
+{
+    size_t total_size = 0;
+    size_t sizes[length] ;
+    for (int i = 0; i < length; i++) {
+        sizes[i] = strlen(tokens[i]);
+        total_size += sizes[i];
+    }
+    
+    char *ptr = malloc (total_size + 1);
+    if (!ptr) return NULL;
+    *(ptr + total_size) = 0;
 
-	if (!s) return NULL;
-
-	va_list argv;
-	const char *c;
-	size_t total_len;
-
-	total_len = strlen (s);
-	va_start (argv, s);
-	
-	while ((c = va_arg (argv, const char *)))
-		total_len += strlen (c);
-	va_end (argv);
-
-	char *buf = malloc (total_len + 1);
-	if (!buf) return NULL;
-
-	int x;
-	size_t len = strlen (s);
-	memcpy (buf, s, len);
-	x = len;
-
-	va_start (argv, s);
-	while ((c = va_arg (argv, const char *)))
-	{
-		len = strlen (c);
-		memcpy (&buf[x], c, len);
-		x += len;
-	}
-	va_end (argv);
-	buf[x] = 0;
-
-	return buf;
+    for (int pos = 0, index = 0; index < length; index++)
+    {
+        memcpy(ptr + pos, tokens[index], sizes[index]);
+        pos += sizes[index];
+    }
+    return ptr;
 }

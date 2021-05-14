@@ -7,7 +7,6 @@
 #include "helpers.h"
 #include "wallpaper.h"
 #include "calgur.h"
-#include "debug.h"
 
 int main 
 (int argc, char *argv[], char *envp[])
@@ -18,16 +17,24 @@ int main
 		return -1;
 	}
 
-	CURLdata *mem = get_response (curl, "https://www.reddit.com/r/wallpaper/.json");
+	CURLdata *mem = get_response (curl, "https://www.reddit.com/r/MinimalWallpaper/.json");
 	if (! mem) {
 		perror("get_response");
 	}
 
 	cJSON *json = cJSON_ParseWithLength (mem->data, mem->size);
-	check_memory(json);
+	if (!json) {
+		perror("cJSON_ParseWithLength");
+		return -1;
+	}
+
+	char *url = reddit_get_random_image_url(json);
+	assert(url);
+
+	puts(url);
 
 
-	if (!set_wall_from_url (curl, reddit_get_random_image_url(json)))
+	if (!set_wall_from_url (curl, url))
 		exit (EXIT_FAILURE);
 
 error:

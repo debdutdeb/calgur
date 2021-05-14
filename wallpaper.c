@@ -16,11 +16,11 @@ extern int errno;
 
 bool set_wall_from_file(const char *filename)
 {
-	char *file_name = mutant_string(
-			"'file://", filename, "'", NULL);
+	char *file_name = cat(
+			"'file://", filename, "'");
 
-	char *cmd = mutant_string(
-			"gsettings set org.gnome.desktop.background picture-uri ", file_name, NULL);
+	char *cmd = cat(
+			"gsettings set org.gnome.desktop.background picture-uri ", file_name);
 
 	int code = run_command(cmd);
 	bool status = true;
@@ -47,8 +47,10 @@ bool set_wall_from_url(CURL *curl, const char *url)
 		return false;
 	}
 
-	char *filename = mutant_string(
-			getenv ("HOME"), "/.cache", ptr, NULL);
+	char *filename = cat(
+			getenv ("HOME"), "/.cache", ptr);
+	assert(filename != NULL);
+	puts(filename);
 
 	if (!download (curl, url, filename)) {
 		fprintf (stderr, "Image download failed. URL: %s\n", url);
