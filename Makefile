@@ -1,7 +1,7 @@
 default: all
 
 all: clean
-	gcc -fPIC -shared wallpaper.c cJSON.c -o libwallpaper.so
+	gcc -fPIC -shared wallpaper.c -o libwallpaper.so
 	gcc -c -g main.c
 	gcc -c -g helpers.c
 	gcc -c -g cJSON.c
@@ -12,4 +12,4 @@ clean:
 	rm -rf calgur *.so *.o
 
 test: all
-	./calgur
+	LD_LIBRARY_PATH=. ./calgur
