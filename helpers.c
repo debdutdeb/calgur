@@ -114,3 +114,12 @@ char *mutant_string (size_t length, const char *tokens[length])
     }
     return ptr;
 }
+
+bool extension
+(const char *__src, const char *__snip)
+{
+	char *ext = strrchr (__src, '.');
+	if (!ext) return false;
+	return (bool)
+		strcmp (*__snip == '.' ? ext : ext+1, __snip) == 0;
+}

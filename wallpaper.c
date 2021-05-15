@@ -49,8 +49,6 @@ bool set_wall_from_url(CURL *curl, const char *url)
 
 	char *filename = cat(
 			getenv ("HOME"), "/.cache", ptr);
-	assert(filename != NULL);
-	puts(filename);
 
 	if (!download (curl, url, filename)) {
 		fprintf (stderr, "Image download failed. URL: %s\n", url);

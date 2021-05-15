@@ -17,7 +17,7 @@ int main
 		return -1;
 	}
 
-	CURLdata *mem = get_response (curl, "https://www.reddit.com/r/MinimalWallpaper/.json");
+	CURLdata *mem = get_response (curl, "https://www.reddit.com/r/WQHD_Wallpaper/.json");
 	if (! mem) {
 		perror("get_response");
 	}
@@ -29,10 +29,6 @@ int main
 	}
 
 	char *url = reddit_get_random_image_url(json);
-	assert(url);
-
-	puts(url);
-
 
 	if (!set_wall_from_url (curl, url))
 		exit (EXIT_FAILURE);

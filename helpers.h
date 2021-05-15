@@ -15,3 +15,5 @@ int run_command (const char*);
 CURLdata *get_response (CURL*, char*);
 bool download (CURL*, const char*, const char*);
 char *mutant_string (size_t, const char *[]);
+
+bool extension (const char *, const char *);
